@@ -51,7 +51,7 @@ class ViewController: UIViewController {
 //        mapView.addAnnotation(artwork)
         
         //mapView.register(ArtworkMarkerView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
-        mapView.register(ArtworkView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
+        //mapView.register(ArtworkView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
         
         loadInitialData()
         mapView.addAnnotations(artworks)
@@ -71,7 +71,7 @@ class ViewController: UIViewController {
             let works = dictionary["data"] as? [[Any]]
             else { return }
         
-        let validWorks = works.flatMap { Artwork(json: $0) }
+        let validWorks = works.compactMap { Artwork(json: $0) }
         artworks.append(contentsOf: validWorks)
     }
     
@@ -85,7 +85,6 @@ class ViewController: UIViewController {
 
 extension ViewController: MKMapViewDelegate {
     
-    /*
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         
         guard let annotation = annotation as? Artwork else { return nil }
@@ -103,9 +102,18 @@ extension ViewController: MKMapViewDelegate {
             view.canShowCallout = true
             view.calloutOffset = CGPoint(x: -5, y: 5)
             view.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+            
+            let detailLabel = UILabel()
+            detailLabel.numberOfLines = 0
+            detailLabel.font = detailLabel.font.withSize(12)
+            //detailLabel.text = annotation.subtitle
+            view.detailCalloutAccessoryView = detailLabel
         }
         
         view.markerTintColor = annotation.markerTintColor
+        view.glyphText = String(annotation.discipline.first!)
+        
+        (view.detailCalloutAccessoryView as? UILabel)?.text = annotation.subtitle
         
 //        var view:MKPinAnnotationView
 //
@@ -122,7 +130,6 @@ extension ViewController: MKMapViewDelegate {
         
         return view
     }
-    */
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         let location = view.annotation as! Artwork
